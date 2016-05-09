@@ -14,7 +14,7 @@ class Product < Udacidata
     # Set the brand, name, and price normally
     @brand = opts[:brand]
     @name = opts[:name]
-    @price = opts[:price]
+    @price = opts[:price].to_f
   end
 
   private

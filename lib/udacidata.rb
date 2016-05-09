@@ -4,18 +4,18 @@ require 'csv'
 
 class Udacidata
 
+  PRODUCT_KEYS = %i[id brand name price]
+
   def self.create(opts = {})
     product = Product.new(opts)
-    CSV.open(data_path, "ab") do |csv|
+    CSV.open(data_path, 'ab') do |csv|
       csv << [product.id, product.brand, product.name, product.price]
     end
     product
   end
 
   def self.all
-    CSV.open(data_path, "r").read.map do |row|
-      Product.new(id: row[0], brand: row[1], name: row[2], price: row[3])
-    end
+    CSV.open(data_path, 'r').read.drop(1).map { |row| Product.new(PRODUCT_KEYS.zip(row).to_h) }
   end
 
   private
