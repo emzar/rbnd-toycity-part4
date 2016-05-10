@@ -22,12 +22,9 @@ class Udacidata
 
   def self.first(n = 1)
     products = []
-    n.times do
-      row = CSV.open(data_path, 'r', headers:true).shift
-      products << product_from_csv(row)
-    end
-    return products.first if n == 1
-    products
+    csv = CSV.open(data_path, 'r', headers:true)
+    n.times { products << product_from_csv(csv.shift) }
+    n == 1 ? products.first : products
   end
 
   private
