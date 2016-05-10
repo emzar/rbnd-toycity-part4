@@ -20,10 +20,14 @@ class Udacidata
     CSV.open(data_path, 'r').read.drop(1).map { |row| Product.new(product_options(row)) }
   end
 
-  def self.first
-    row = CSV.open(data_path, 'r', headers:true).shift
-    opts = row.to_hash.map { |k, v| [PRODUCT_MAPPINGS[k], v] }.to_h
-    Product.new(opts)
+  def self.first(n = 1)
+    products = []
+    n.times do
+      row = CSV.open(data_path, 'r', headers:true).shift
+      products << product_from_csv(row)
+    end
+    return products.first if n == 1
+    products
   end
 
   private
@@ -34,5 +38,10 @@ class Udacidata
 
   def self.product_options(row)
     PRODUCT_KEYS.zip(row).to_h
+  end
+
+  def self.product_from_csv(row)
+    opts = row.to_hash.map { |k, v| [PRODUCT_MAPPINGS[k], v] }.to_h
+    Product.new(opts)
   end
 end
