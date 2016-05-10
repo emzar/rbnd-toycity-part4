@@ -4,9 +4,7 @@ require 'csv'
 
 class Udacidata
 
-  PRODUCT_CSV_HEADERS = %w[id brand product price]
   PRODUCT_KEYS = %i[id brand name price]
-  PRODUCT_MAPPINGS = PRODUCT_CSV_HEADERS.zip(PRODUCT_KEYS).to_h
 
   def self.create(opts = {})
     product = Product.new(opts)
@@ -17,14 +15,15 @@ class Udacidata
   end
 
   def self.all
-    CSV.read(data_path, headers:true).map { |row| product_from_csv(row) }
+    products_from_csv(csv_table.drop(1))
   end
 
   def self.first(n = 1)
-    products = []
-    csv = CSV.open(data_path, 'r', headers:true)
-    n.times { products << product_from_csv(csv.shift) }
-    n == 1 ? products.first : products
+    products_from_csv(csv_table.drop(1).first(n))
+  end
+
+  def self.last(n = 1)
+    products_from_csv(csv_table.last(n))
   end
 
   private
@@ -33,7 +32,16 @@ class Udacidata
     File.dirname(__FILE__) + "/../data/data.csv"
   end
 
+  def self.csv_table
+    CSV.read(data_path)
+  end
+
+  def self.products_from_csv(table)
+    products = table.map { |row| product_from_csv(row) }
+    products.size == 1 ? products.first : products
+  end
+
   def self.product_from_csv(row)
-    Product.new(row.to_hash.map { |k, v| [PRODUCT_MAPPINGS[k], v] }.to_h)
+    Product.new(PRODUCT_KEYS.zip(row).to_h)
   end
 end
