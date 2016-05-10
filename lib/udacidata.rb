@@ -17,7 +17,7 @@ class Udacidata
   end
 
   def self.all
-    CSV.open(data_path, 'r').read.drop(1).map { |row| Product.new(product_options(row)) }
+    CSV.read(data_path, headers:true).map { |row| product_from_csv(row) }
   end
 
   def self.first(n = 1)
@@ -33,12 +33,7 @@ class Udacidata
     File.dirname(__FILE__) + "/../data/data.csv"
   end
 
-  def self.product_options(row)
-    PRODUCT_KEYS.zip(row).to_h
-  end
-
   def self.product_from_csv(row)
-    opts = row.to_hash.map { |k, v| [PRODUCT_MAPPINGS[k], v] }.to_h
-    Product.new(opts)
+    Product.new(row.to_hash.map { |k, v| [PRODUCT_MAPPINGS[k], v] }.to_h)
   end
 end
