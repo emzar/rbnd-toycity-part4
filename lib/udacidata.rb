@@ -26,6 +26,10 @@ class Udacidata
     products_from_csv(csv_table.last(n))
   end
 
+  def self.find(n)
+    product_from_csv(csv_table[n])
+  end
+
   private
 
   def self.data_path
