@@ -26,8 +26,15 @@ class Udacidata
     products_from_csv(csv_table.last(n))
   end
 
-  def self.find(n)
-    product_from_csv(csv_table[n])
+  def self.find(index)
+    product_from_csv(csv_table[index])
+  end
+
+  def self.destroy(index)
+    table = CSV.table(data_path)
+    row = table.delete(index - 1)
+    File.open(data_path, 'w') { |f| f.write(table.to_csv) }
+    product_from_csv(row.fields)
   end
 
   private
