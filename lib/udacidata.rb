@@ -40,7 +40,7 @@ class Udacidata
 
   FIND_METHODS.each do |method|
     define_singleton_method("find_by_#{method}") do |value|
-      product_from_csv(CSV.table(data_path).find { |row| row[csv_row_key(method)] == value }.fields)
+      product_from_csv(csv_table.find { |row| row[csv_row_key(method)] == value }.fields)
     end
   end
 
