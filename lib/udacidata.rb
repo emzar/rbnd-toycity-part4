@@ -55,8 +55,8 @@ class Udacidata
     opts.each do |key, value|
       self.send("#{key}=", value)
       table[self.id - 1][Udacidata.csv_row_key(key)] = value
-      Udacidata.save!(table)
     end
+    Udacidata.save!(table)
     self
   end
 
