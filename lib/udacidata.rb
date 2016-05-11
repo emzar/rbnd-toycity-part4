@@ -5,6 +5,7 @@ require 'csv'
 class Udacidata
 
   PRODUCT_KEYS = %i[id brand name price]
+  METHODS_TO_FIELDS = { brand: :brand, name: :product }
 
   def self.create(opts = {})
     product = Product.new(opts)
@@ -37,12 +38,10 @@ class Udacidata
     product_from_csv(row.fields)
   end
 
-  def self.find_by_brand(brand)
-    product_from_csv(CSV.table(data_path).find { |row| row[:brand] == brand }.fields)
-  end
-
-  def self.find_by_name(name)
-    product_from_csv(CSV.table(data_path).find { |row| row[:product] == name }.fields)
+  METHODS_TO_FIELDS.each do |method, field_name|
+    define_singleton_method("find_by_#{method}") do |value|
+      product_from_csv(CSV.table(data_path).find { |row| row[field_name] == value }.fields)
+    end
   end
 
   private
