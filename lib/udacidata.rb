@@ -37,6 +37,14 @@ class Udacidata
     product_from_csv(row.fields)
   end
 
+  def self.find_by_brand(brand)
+    product_from_csv(CSV.table(data_path).find { |row| row[:brand] == brand }.fields)
+  end
+
+  def self.find_by_name(name)
+    product_from_csv(CSV.table(data_path).find { |row| row[:product] == name }.fields)
+  end
+
   private
 
   def self.data_path
