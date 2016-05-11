@@ -16,25 +16,25 @@ class Udacidata
   end
 
   def self.all
-    products_from_csv(csv_table.drop(1))
+    products_from_array(csv_array.drop(1))
   end
 
   def self.first(n = 1)
-    products_from_csv(csv_table.drop(1).first(n))
+    products_from_array(csv_array.drop(1).first(n))
   end
 
   def self.last(n = 1)
-    products_from_csv(csv_table.last(n))
+    products_from_array(csv_array.last(n))
   end
 
   def self.find(index)
-    product_from_csv(csv_table[index])
+    product_from_csv(csv_array[index])
   end
 
   def self.destroy(index)
-    table = CSV.table(data_path)
+    table = csv_table
     row = table.delete(index - 1)
-    File.open(data_path, 'w') { |f| f.write(table.to_csv) }
+    save!(table)
     product_from_csv(row.fields)
   end
 
@@ -46,12 +46,17 @@ class Udacidata
 
   def self.where(opts = {})
     option = opts.keys.first
-    products = CSV.table(data_path).select { |row| row[option] == opts[option] }
+    products = csv_table.select { |row| row[option] == opts[option] }
     products.map { |row| product_from_csv(row.fields) }
   end
 
   def update(opts = {})
-    opts.each { |key, value| self.send("#{key}=", value) }
+    table = Udacidata.csv_table
+    opts.each do |key, value|
+      self.send("#{key}=", value)
+      table[self.id - 1][Udacidata.csv_row_key(key)] = value
+      Udacidata.save!(table)
+    end
     self
   end
 
@@ -61,16 +66,28 @@ class Udacidata
     File.dirname(__FILE__) + "/../data/data.csv"
   end
 
-  def self.csv_table
+  def self.csv_array
     CSV.read(data_path)
   end
 
-  def self.products_from_csv(table)
+  def self.csv_table
+    CSV.table(data_path)
+  end
+
+  def self.products_from_array(table)
     products = table.map { |row| product_from_csv(row) }
     products.size == 1 ? products.first : products
   end
 
   def self.product_from_csv(row)
     Product.new(PRODUCT_KEYS.zip(row).to_h)
+  end
+
+  def self.csv_row_key(key)
+    key == :name ? :product : key
+  end
+
+  def self.save!(table)
+    File.open(data_path, 'w') { |f| f.write(table.to_csv) }
   end
 end
