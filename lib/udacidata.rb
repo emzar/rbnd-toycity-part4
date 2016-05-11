@@ -50,6 +50,11 @@ class Udacidata
     products.map { |row| product_from_csv(row.fields) }
   end
 
+  def update(opts = {})
+    opts.each { |key, value| self.send("#{key}=", value) }
+    self
+  end
+
   private
 
   def self.data_path
