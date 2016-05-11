@@ -44,6 +44,12 @@ class Udacidata
     end
   end
 
+  def self.where(opts = {})
+    option = opts.keys.first
+    products = CSV.table(data_path).select { |row| row[option] == opts[option] }
+    products.map { |row| product_from_csv(row.fields) }
+  end
+
   private
 
   def self.data_path
