@@ -11,4 +11,8 @@ module Analyzable
   def count_by_brand(products)
     { products.first.brand => products.size }
   end
+
+  def count_by_name(products)
+    { products.first.name => products.size }
+  end
 end
