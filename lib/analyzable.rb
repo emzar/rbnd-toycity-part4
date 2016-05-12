@@ -8,11 +8,9 @@ module Analyzable
     "Average Price: $#{average_price(products)}"
   end
 
-  def count_by_brand(products)
-    { products.first.brand => products.size }
-  end
-
-  def count_by_name(products)
-    { products.first.name => products.size }
+  %i[brand name].each do |method|
+    define_singleton_method("count_by_#{method}") do |products|
+      { products.first.public_send("#{method}") => products.size }
+    end
   end
 end
