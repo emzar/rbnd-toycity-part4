@@ -7,4 +7,8 @@ module Analyzable
   def print_report(products)
     "Average Price: $#{average_price(products)}"
   end
+
+  def count_by_brand(products)
+    { products.first.brand => products.size }
+  end
 end
