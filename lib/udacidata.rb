@@ -46,7 +46,8 @@ class Udacidata
 
   def self.where(opts = {})
     option = opts.keys.first
-    products = csv_table.select { |row| row[option] == opts[option] }
+    key = Udacidata.csv_row_key(option)
+    products = csv_table.select { |row| row[key] == opts[option] }
     products.map { |row| product_from_csv(row.fields) }
   end
 
