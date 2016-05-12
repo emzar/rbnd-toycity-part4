@@ -8,11 +8,11 @@ class Udacidata
   FIND_METHODS = %i[brand name]
 
   def self.create(opts = {})
-    product = Product.new(opts)
-    CSV.open(data_path, 'ab') do |csv|
-      csv << [product.id, product.brand, product.name, product.price]
+    Product.new(opts).tap do |product|
+      CSV.open(data_path, 'ab') do |csv|
+        csv << [product.id, product.brand, product.name, product.price]
+      end
     end
-    product
   end
 
   def self.all
@@ -51,13 +51,14 @@ class Udacidata
   end
 
   def update(opts = {})
-    table = Udacidata.csv_table
-    opts.each do |key, value|
-      self.send("#{key}=", value)
-      table[self.id - 1][Udacidata.csv_row_key(key)] = value
+    self.tap do |product|
+      table = Udacidata.csv_table
+      opts.each do |key, value|
+        product.send("#{key}=", value)
+        table[product.id - 1][Udacidata.csv_row_key(key)] = value
+      end
+      Udacidata.save!(table)
     end
-    Udacidata.save!(table)
-    self
   end
 
   private
