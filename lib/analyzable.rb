@@ -23,9 +23,7 @@ module Analyzable
 
     define_singleton_method("report_by_#{method}") do |products|
       "Inventory by #{method.capitalize}:\n".tap do |report|
-        public_send("count_by_#{method}", products).each do |key, value|
-          report << "  - #{key}: #{value}\n"
-        end
+        public_send("count_by_#{method}", products).each { |k, v| report << "  - #{k}: #{v}\n" }
       end
     end
   end
