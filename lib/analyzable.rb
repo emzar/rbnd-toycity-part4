@@ -10,7 +10,12 @@ module Analyzable
 
   %i[brand name].each do |method|
     define_singleton_method("count_by_#{method}") do |products|
-      { products.first.public_send("#{method}") => products.size }
+      {}.tap do |result|
+        products.each do |product|
+          value = product.public_send("#{method}")
+          result.has_key?(value) ? result[value] += 1 : result[value] = 1
+        end
+      end
     end
   end
 end

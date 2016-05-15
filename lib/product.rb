@@ -18,6 +18,10 @@ class Product < Udacidata
     @price = opts[:price].to_f
   end
 
+  def to_s
+    "id: #{id}  brand: #{brand}  name: #{name}  price: #{price}\n"
+  end
+
   private
 
     # Reads the last line of the data file, and gets the id if one exists
