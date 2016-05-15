@@ -61,7 +61,7 @@ class Udacidata
     self.tap do |product|
       table = Udacidata.csv_table
       opts.each do |key, value|
-        product.send("#{key}=", value)
+        product.public_send("#{key}=", value)
         table[product.id - 1][Udacidata.csv_row_key(key)] = value
       end
       Udacidata.save!(table)
