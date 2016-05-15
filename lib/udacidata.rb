@@ -28,13 +28,15 @@ class Udacidata
   end
 
   def self.find(index)
-    product_from_csv(csv_array[index])
+    row = csv_array[index]
+    raise ProductNotFoundError, index unless row
+    product_from_csv(row)
   end
 
   def self.destroy(index)
     table = csv_table
     row = table.delete(index - 1)
-    raise ProductNotFoundError, index if row.nil?
+    raise ProductNotFoundError, index unless row
     save!(table)
     product_from_csv(row.fields)
   end
