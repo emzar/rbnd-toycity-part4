@@ -30,7 +30,7 @@ class Udacidata
   def self.find(index)
     row = csv_array[index]
     raise ProductNotFoundError, index unless row
-    product_from_csv(row)
+    product_from_array(row)
   end
 
   def self.destroy(index)
@@ -38,12 +38,12 @@ class Udacidata
     row = table.delete(index - 1)
     raise ProductNotFoundError, index unless row
     save!(table)
-    product_from_csv(row.fields)
+    product_from_array(row.fields)
   end
 
   FIND_METHODS.each do |method|
     define_singleton_method("find_by_#{method}") do |value|
-      product_from_csv(csv_table.find { |row| row[csv_row_key(method)] == value }.fields)
+      product_from_array(csv_table.find { |row| row[csv_row_key(method)] == value }.fields)
     end
   end
 
@@ -51,7 +51,7 @@ class Udacidata
     option = opts.keys.first
     key = Udacidata.csv_row_key(option)
     products = csv_table.select { |row| row[key] == opts[option] }
-    products.map { |row| product_from_csv(row.fields) }
+    products.map { |row| product_from_array(row.fields) }
   end
 
   def update(opts = {})
@@ -80,11 +80,11 @@ class Udacidata
   end
 
   def self.products_from_array(table)
-    products = table.map { |row| product_from_csv(row) }
+    products = table.map { |row| product_from_array(row) }
     products.size == 1 ? products.first : products
   end
 
-  def self.product_from_csv(row)
+  def self.product_from_array(row)
     Product.new(PRODUCT_KEYS.zip(row).to_h)
   end
 
