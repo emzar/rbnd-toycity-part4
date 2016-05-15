@@ -8,6 +8,8 @@ class Udacidata
   FIND_METHODS = %i[brand name]
 
   def self.create(opts = {})
+    find(opts[:id])
+  rescue ProductNotFoundError
     Product.new(opts).tap do |product|
       CSV.open(data_path, 'ab') do |csv|
         csv << [product.id, product.brand, product.name, product.price]
@@ -28,7 +30,7 @@ class Udacidata
   end
 
   def self.find(index)
-    row = csv_array[index]
+    row = csv_array[index] if index
     raise ProductNotFoundError, index unless row
     product_from_array(row)
   end

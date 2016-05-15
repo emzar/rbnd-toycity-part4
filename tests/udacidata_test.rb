@@ -12,6 +12,14 @@ class TestUdacidata < MiniTest::Test
     db_seed
   end
 
+  def test_create_method_adds_once_same_id
+    before = CSV.read(@data_path).length
+    existed_id = Product.first.id
+    Product.create(id: existed_id)
+    after = CSV.read(@data_path).length
+    assert(after == before)
+  end
+
   def test_create_method_adds_to_database
     before = CSV.read(@data_path).length
     5.times do
