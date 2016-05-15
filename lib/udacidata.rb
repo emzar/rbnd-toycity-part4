@@ -34,6 +34,7 @@ class Udacidata
   def self.destroy(index)
     table = csv_table
     row = table.delete(index - 1)
+    raise ProductNotFoundError, index if row.nil?
     save!(table)
     product_from_csv(row.fields)
   end
