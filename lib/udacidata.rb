@@ -5,7 +5,7 @@ require 'csv'
 class Udacidata
 
   PRODUCT_KEYS = %i[id brand name price]
-  FIND_METHODS = %i[brand name]
+  FIND_METHODS = %i[id brand name]
 
   def self.create(opts = {})
     find(opts[:id])
@@ -30,23 +30,27 @@ class Udacidata
     products_from_array(csv_array.last(n))
   end
 
-  def self.find(index)
-    row = csv_array[index] if index
-    raise ProductNotFoundError, index unless row
-    product_from_array(row)
+  def self.find(id)
+    find_by_id(id)
   end
 
-  def self.destroy(index)
+  def self.destroy(id)
     table = csv_table
-    row = table.delete(index - 1)
-    raise ProductNotFoundError, index unless row
-    save!(table)
-    product_from_array(row.fields)
+    table.each_with_index do |row, index|
+      if row[:id] == id
+        table.delete(index)
+        save!(table)
+        return product_from_array(row.fields)
+      end
+    end
+    raise ProductNotFoundError.new(:id, id)
   end
 
   FIND_METHODS.each do |method|
     define_singleton_method("find_by_#{method}") do |value|
-      product_from_array(csv_table.find { |row| row[csv_row_key(method)] == value }.fields)
+      csv_row = csv_table.find { |row| row[csv_row_key(method)] == value }
+      raise ProductNotFoundError.new(method, value) unless csv_row
+      product_from_array(csv_row.fields)
     end
   end
 

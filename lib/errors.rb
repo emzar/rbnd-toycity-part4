@@ -1,5 +1,5 @@
 class ProductNotFoundError < StandardError
-  def initialize(id)
-    super("There is no product with id ##{id}")
+  def initialize(method, value)
+    super("There is no product with #{method}: #{value}")
   end
 end
