@@ -10,6 +10,7 @@ class Udacidata
   def self.create(opts = {})
     find(opts[:id])
   rescue ProductNotFoundError
+    opts[:price] = opts[:price].to_f
     Product.new(opts).tap do |product|
       CSV.open(data_path, 'ab') do |csv|
         csv << [product.id, product.brand, product.name, product.price]
@@ -74,11 +75,11 @@ class Udacidata
   end
 
   def self.csv_array
-    CSV.read(data_path)
+    CSV.read(data_path, converters: :numeric)
   end
 
   def self.csv_table
-    CSV.table(data_path)
+    CSV.table(data_path, converters: :numeric)
   end
 
   def self.products_from_array(table)
