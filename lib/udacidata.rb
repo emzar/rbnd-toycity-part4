@@ -5,7 +5,8 @@ require 'csv'
 class Udacidata
 
   PRODUCT_KEYS = %i[id brand name price]
-  FIND_METHODS = %i[id brand name]
+
+  create_finder_methods :id, :brand, :name
 
   def self.create(opts = {})
     find(opts[:id])
@@ -44,14 +45,6 @@ class Udacidata
       end
     end
     raise ProductNotFoundError.new(:id, id)
-  end
-
-  FIND_METHODS.each do |method|
-    define_singleton_method("find_by_#{method}") do |value|
-      csv_row = csv_table.find { |row| row[csv_row_key(method)] == value }
-      raise ProductNotFoundError.new(method, value) unless csv_row
-      product_from_array(csv_row.fields)
-    end
   end
 
   def self.where(opts = {})
