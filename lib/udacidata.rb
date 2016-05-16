@@ -37,14 +37,11 @@ class Udacidata
 
   def self.destroy(id)
     table = csv_table
-    table.each_with_index do |row, index|
-      if row[:id] == id
-        table.delete(index)
-        save!(table)
-        return product_from_array(row.fields)
-      end
-    end
-    raise ProductNotFoundError.new(:id, id)
+    index = csv_table_index(id, table)
+    raise ProductNotFoundError.new(:id, id) unless index
+    row = table.delete(index)
+    save!(table)
+    product_from_array(row.fields)
   end
 
   def self.where(opts = {})
@@ -59,7 +56,9 @@ class Udacidata
       table = Udacidata.csv_table
       opts.each do |key, value|
         product.public_send("#{key}=", value)
-        table[product.id - 1][Udacidata.csv_row_key(key)] = value
+        row_index = Udacidata.csv_table_index(id, table)
+        field_index = Udacidata.csv_row_key(key)
+        table[row_index][field_index] = value
       end
       Udacidata.save!(table)
     end
@@ -77,6 +76,11 @@ class Udacidata
 
   def self.csv_table
     CSV.table(data_path, converters: :numeric)
+  end
+
+  def self.csv_table_index(id, table)
+    table.each_with_index { |row, index| return index if row[:id] == id }
+    nil
   end
 
   def self.products_from_array(table)
